@@ -583,72 +583,63 @@
     const btn      = this;
 
     const setLoading = () => {
-      btn._orig            = btn.innerHTML;
-      btn.innerHTML        = 'กำลังโหลด…';
-      btn.style.opacity    = '.6';
+      btn._orig               = btn.innerHTML;
+      btn.innerHTML           = 'กำลังโหลด…';
+      btn.style.opacity       = '.6';
       btn.style.pointerEvents = 'none';
     };
     const resetBtn = () => {
-      btn.innerHTML        = btn._orig;
-      btn.style.opacity    = '';
+      btn.innerHTML           = btn._orig;
+      btn.style.opacity       = '';
       btn.style.pointerEvents = '';
     };
 
-    /* ── คอม: blob download ตรงๆ ไม่ต้องมี share sheet ── */
-    const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    /* ── ตรวจ platform ── */
+    const ua    = navigator.userAgent;
+    const isIOS = /iPhone|iPad|iPod/i.test(ua);
 
-    if (!isMobile) {
-      setLoading();
-      try {
-        const res  = await fetch(url, { cache: 'force-cache' });
-        const blob = await res.blob();
-        const a    = Object.assign(document.createElement('a'), {
-          href: URL.createObjectURL(blob), download: filename,
-        });
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-      } catch {
-        window.open(url, '_blank'); /* fallback เปิดแท็บ */
-      } finally {
-        resetBtn();
-      }
-      return;
-    }
-
-    /* ── มือถือ: Web Share API → Native Save ── */
     setLoading();
+
     try {
-      const res  = await fetch(url, { cache: 'force-cache' });
+      const res = await fetch(url, { cache: 'force-cache' });
       if (!res.ok) throw new Error('fetch_fail');
       const blob = await res.blob();
-      const file = new File([blob], filename, { type: blob.type || 'image/jpeg' });
 
-      if (navigator.canShare?.({ files: [file] })) {
-        /* iOS Safari 15+, Android Chrome 86+
-           → เด้ง Share Sheet → แตะ "บันทึกในรูปภาพ" */
-        resetBtn();
-        await navigator.share({ files: [file], title: 'KMITL Boxing Club' });
+      /* ══ iOS → Web Share API → "บันทึกในรูปภาพ" ══ */
+      if (isIOS) {
+        const file = new File([blob], filename, { type: blob.type || 'image/jpeg' });
+        if (navigator.canShare?.({ files: [file] })) {
+          resetBtn();
+          await navigator.share({ files: [file], title: 'KMITL Boxing Club' });
+          return;
+        }
+        /* iOS เก่าที่ไม่รองรับ → เปิดแท็บใหม่แล้วแตะค้าง */
+        const blobUrl = URL.createObjectURL(blob);
+        window.open(blobUrl, '_blank');
+        alert('แตะค้างที่รูป → "เพิ่มในรูปภาพ"');
         return;
       }
 
-      /* มือถือที่ไม่รองรับ share → blob download */
-      const a = Object.assign(document.createElement('a'), {
-        href: URL.createObjectURL(blob), download: filename,
+      /* ══ Android + Desktop → blob download ตรงๆ ══ */
+      const blobUrl = URL.createObjectURL(blob);
+      const a       = Object.assign(document.createElement('a'), {
+        href:     blobUrl,
+        download: filename,
       });
       document.body.appendChild(a);
       a.click();
       a.remove();
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 2000);
 
     } catch (err) {
-      if (err.name === 'AbortError') return; /* ผู้ใช้กด Cancel เอง */
+      if (err.name === 'AbortError') return; /* ผู้ใช้กด Cancel เอง (iOS) */
       window.open(url, '_blank');
-      alert('แตะค้างที่รูป → "บันทึกรูปภาพ"');
     } finally {
       resetBtn();
     }
   });
 </script>
+
 
 
 </body>
