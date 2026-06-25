@@ -402,7 +402,7 @@
     <div class="hero-content reveal in">
       <span class="eyebrow">MUAY THAI · BOXING · KMITL</span>
       <h1>ขึ้นริงกับ<br><span class="accent">KMITL</span> BOXING CLUB</h1>
-      <a class="btn-download" id="downloadHeroBtn" href="image3.jpg" download="kmitl-boxing-club.jpg">
+      <a class="btn-download" id="downloadHeroBtn" href="โปรเตอร์ชมรมมวยKMITL.png" download="kmitl-boxing-club.jpg">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 11l5 5 5-5"/><path d="M5 21h14"/></svg>
         บันทึกใบปลิวเก็บไว้
       </a>
@@ -566,35 +566,90 @@
 </div>
 
 <script>
-  const els = document.querySelectorAll('.reveal');
-  const io = new IntersectionObserver((entries)=>{
-    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); } });
-  }, {threshold:0.15});
-  els.forEach(el=>io.observe(el));
+  /* ─── Scroll reveal ─── */
+  document.querySelectorAll('.reveal').forEach(el =>
+    new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) el.classList.add('in'); },
+      { threshold: 0.15 }
+    ).observe(el)
+  );
 
-  // ทำให้ปุ่ม "บันทึกรูปนี้" ดาวน์โหลดแน่นอนขึ้น (เผื่อรูปถูกย้ายไปอยู่คนละโดเมนในอนาคต)
-  const dlBtn = document.getElementById('downloadHeroBtn');
-  if(dlBtn){
-    dlBtn.addEventListener('click', async (e)=>{
-      const url = dlBtn.getAttribute('href');
-      const filename = dlBtn.getAttribute('download') || 'kmitl-boxing-club.jpg';
-      try{
-        const res = await fetch(url);
+  /* ─── Download button ─── */
+  document.getElementById('downloadHeroBtn')?.addEventListener('click', async function(e) {
+    e.preventDefault();
+
+    const url      = this.getAttribute('href');
+    const filename = this.getAttribute('download') || 'kmitl-boxing-club.jpg';
+    const btn      = this;
+
+    const setLoading = () => {
+      btn._orig            = btn.innerHTML;
+      btn.innerHTML        = 'กำลังโหลด…';
+      btn.style.opacity    = '.6';
+      btn.style.pointerEvents = 'none';
+    };
+    const resetBtn = () => {
+      btn.innerHTML        = btn._orig;
+      btn.style.opacity    = '';
+      btn.style.pointerEvents = '';
+    };
+
+    /* ── คอม: blob download ตรงๆ ไม่ต้องมี share sheet ── */
+    const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    if (!isMobile) {
+      setLoading();
+      try {
+        const res  = await fetch(url, { cache: 'force-cache' });
         const blob = await res.blob();
-        const blobUrl = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = blobUrl;
-        a.download = filename;
+        const a    = Object.assign(document.createElement('a'), {
+          href: URL.createObjectURL(blob), download: filename,
+        });
         document.body.appendChild(a);
         a.click();
         a.remove();
-        URL.revokeObjectURL(blobUrl);
-        e.preventDefault();
-      }catch(err){
-        // ดึงรูปไม่ได้ (เช่น ยังไม่มีไฟล์รูปจริง) ปล่อยให้เบราว์เซอร์จัดการแบบปกติผ่าน href/download
+      } catch {
+        window.open(url, '_blank'); /* fallback เปิดแท็บ */
+      } finally {
+        resetBtn();
       }
-    });
-  }
+      return;
+    }
+
+    /* ── มือถือ: Web Share API → Native Save ── */
+    setLoading();
+    try {
+      const res  = await fetch(url, { cache: 'force-cache' });
+      if (!res.ok) throw new Error('fetch_fail');
+      const blob = await res.blob();
+      const file = new File([blob], filename, { type: blob.type || 'image/jpeg' });
+
+      if (navigator.canShare?.({ files: [file] })) {
+        /* iOS Safari 15+, Android Chrome 86+
+           → เด้ง Share Sheet → แตะ "บันทึกในรูปภาพ" */
+        resetBtn();
+        await navigator.share({ files: [file], title: 'KMITL Boxing Club' });
+        return;
+      }
+
+      /* มือถือที่ไม่รองรับ share → blob download */
+      const a = Object.assign(document.createElement('a'), {
+        href: URL.createObjectURL(blob), download: filename,
+      });
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+    } catch (err) {
+      if (err.name === 'AbortError') return; /* ผู้ใช้กด Cancel เอง */
+      window.open(url, '_blank');
+      alert('แตะค้างที่รูป → "บันทึกรูปภาพ"');
+    } finally {
+      resetBtn();
+    }
+  });
 </script>
+
+
 </body>
 </html>
