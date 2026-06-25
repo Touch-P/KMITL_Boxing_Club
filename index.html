@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KMITL Boxing Club</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800;900&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --canvas-dark:#15130f;
+    --canvas-dark-2:#1d1a14;
+    --canvas-light:#ede6d3;
+    --corner-red:#c81e3a;
+    --corner-red-deep:#8e1326;
+    --corner-blue:#1b4f9c;
+    --corner-blue-deep:#123a73;
+    --belt-gold:#c9a24b;
+    --ink:#15130f;
+    --chalk:#f5f1e6;
+    --line:rgba(245,241,230,0.18);
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--canvas-dark);
+    color:var(--chalk);
+    font-family:'Kanit',sans-serif;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  .wrap{max-width:560px;margin:0 auto;position:relative;}
+
+  .eyebrow{
+    font-family:'Oswald',sans-serif;
+    text-transform:uppercase;
+    letter-spacing:.22em;
+    font-size:.72rem;
+    font-weight:600;
+  }
+
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease, transform .7s ease;}
+  .reveal.in{opacity:1;transform:translateY(0);}
+  @media (prefers-reduced-motion: reduce){
+    .reveal{opacity:1;transform:none;transition:none;}
+    html{scroll-behavior:auto;}
+  }
+
+  /* ============ HERO ============ */
+  .hero{
+    position:relative;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-end;
+    padding:7vh 6vw 6vh;
+    background:var(--canvas-dark);
+    border-bottom:1px solid var(--line);
+    overflow:hidden;
+  }
+  .hero-photo{
+    position:absolute;inset:0;
+    margin:4vh 4vw;
+    border-radius:6px;
+    overflow:hidden;
+    background:var(--canvas-dark-2);
+  }
+  .hero-photo img{
+    width:100%;height:100%;
+    object-fit:cover;
+    display:block;
+  }
+  .hero-photo::after{
+    content:"";
+    position:absolute;inset:0;
+    background:
+      radial-gradient(120% 90% at 50% 0%, rgba(200,30,58,.22), transparent 55%),
+      radial-gradient(120% 90% at 50% 100%, rgba(27,79,156,.2), transparent 55%),
+      linear-gradient(180deg, rgba(21,19,15,0) 35%, rgba(21,19,15,.92) 100%);
+  }
+  .hero-frame{
+    position:absolute; inset:14px;
+    border:1px solid var(--belt-gold);
+    border-radius:2px;
+    pointer-events:none;
+    opacity:.55;
+  }
+  .hero-content{position:relative;z-index:2;}
+  .hero .eyebrow{color:var(--belt-gold);margin-bottom:.9rem;display:block;}
+  .hero h1{
+    font-weight:900;
+    font-size:clamp(2.6rem, 11vw, 3.6rem);
+    line-height:1.04;
+    margin:0 0 1rem;
+    letter-spacing:-.01em;
+  }
+  .hero h1 .accent{color:var(--corner-red);}
+  .hero p.lead{
+    font-size:1.02rem;
+    line-height:1.65;
+    color:rgba(245,241,230,.86);
+    max-width:30ch;
+    margin:0 0 2.2rem;
+    font-weight:400;
+  }
+  .scroll-cue{
+    font-family:'Oswald',sans-serif;
+    font-size:.72rem;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:rgba(245,241,230,.6);
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .scroll-cue .bar{width:1px;height:22px;background:var(--belt-gold);animation:pulse 1.6s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:.3;height:14px;}50%{opacity:1;height:26px;}}
+
+  .btn-download{
+    display:inline-flex;align-items:center;gap:.5rem;
+    font-family:'Oswald',sans-serif;
+    font-size:.74rem;letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--ink);
+    background:var(--belt-gold);
+    border:none;border-radius:30px;
+    padding:.65rem 1.1rem;
+    margin-bottom:1.3rem;
+    text-decoration:none;
+    cursor:pointer;
+  }
+  .btn-download svg{width:14px;height:14px;flex-shrink:0;}
+
+  /* ============ SECTION SHELL ============ */
+  section{padding:5.2rem 6vw;position:relative;}
+  .section-light{background:var(--canvas-light);color:var(--ink);}
+  .tag{
+    font-family:'Oswald',sans-serif;
+    font-size:.7rem;
+    letter-spacing:.2em;
+    text-transform:uppercase;
+    color:var(--belt-gold);
+    font-weight:600;
+    margin-bottom:.7rem;
+    display:block;
+  }
+  .section-light .tag{color:var(--corner-red-deep);}
+  h2{
+    font-weight:800;
+    font-size:clamp(1.7rem,6vw,2.1rem);
+    line-height:1.18;
+    margin:0 0 1rem;
+  }
+
+  /* ============ FACE-OFF / QR SECTION ============ */
+  .faceoff{background:var(--canvas-dark-2);}
+  .faceoff-head{text-align:center;margin-bottom:2.6rem;}
+  .faceoff-head h2{margin-bottom:.4rem;}
+  .faceoff-head p{
+    color:rgba(245,241,230,.7);
+    font-size:.92rem;
+    max-width:34ch;margin:0 auto;
+  }
+  .vs-row{
+    display:flex;align-items:center;justify-content:center;
+    gap:1rem;margin-bottom:2.4rem;
+  }
+  .vs-row .line{flex:1;height:1px;background:var(--line);}
+  .vs-row .vs-word{
+    font-family:'Oswald',sans-serif;
+    font-weight:700;font-size:1.1rem;
+    letter-spacing:.1em;color:var(--belt-gold);
+  }
+  .corners{display:flex;flex-direction:column;gap:1.2rem;}
+  .corner-card{
+    border-radius:14px;
+    padding:1.7rem 1.4rem;
+    position:relative;
+    overflow:hidden;
+    border:1px solid var(--line);
+  }
+  .corner-card.red{background:linear-gradient(160deg, var(--corner-red-deep), #2a0d14 75%);}
+  .corner-card.blue{background:linear-gradient(160deg, var(--corner-blue-deep), #0d1f3a 75%);}
+  .corner-label{
+    font-family:'Oswald',sans-serif;
+    font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;
+    color:rgba(245,241,230,.65);margin-bottom:.3rem;display:block;
+  }
+  .corner-card h3{
+    font-weight:800;font-size:1.3rem;margin:0 0 .5rem;
+  }
+  .corner-card p{
+    font-size:.88rem;line-height:1.55;
+    color:rgba(245,241,230,.82);
+    margin:0 0 1.3rem;
+    max-width:28ch;
+  }
+  .qr-block{
+    display:flex;align-items:center;gap:1rem;
+    background:rgba(245,241,230,.06);
+    border:1px solid rgba(245,241,230,.18);
+    border-radius:10px;
+    padding:.9rem;
+  }
+  .qr-block img{
+    width:92px;height:92px;border-radius:6px;
+    background:var(--chalk);
+    flex-shrink:0;
+  }
+  .qr-text{font-size:.78rem;line-height:1.5;color:rgba(245,241,230,.85);}
+  .qr-text b{
+    display:block;font-family:'Oswald',sans-serif;
+    font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--chalk);margin-bottom:.2rem;
+  }
+
+  /* ============ MISSION / STATS ============ */
+  .mission-photo{
+    border-radius:12px;overflow:hidden;
+    margin-bottom:2rem;
+    aspect-ratio:4/3;
+    background:rgba(21,19,15,.08);
+  }
+  .mission-photo img{width:100%;height:100%;object-fit:cover;display:block;}
+  .mission p{
+    font-size:1rem;line-height:1.8;
+    color:rgba(21,19,15,.85);
+    max-width:34ch;margin:0 0 1.6rem;
+  }
+  .pull-quote{
+    margin:0 0 2.2rem;
+    padding:1.1rem 1.3rem;
+    border-left:3px solid var(--corner-red-deep);
+    background:rgba(21,19,15,.04);
+    border-radius:0 8px 8px 0;
+  }
+  .pull-quote p{
+    margin:0 0 .6rem;
+    font-size:.96rem;
+    font-style:italic;
+    line-height:1.65;
+    color:rgba(21,19,15,.85);
+    max-width:none;
+  }
+  .pull-quote cite{
+    font-family:'Oswald',sans-serif;
+    font-size:.72rem;letter-spacing:.05em;
+    color:rgba(21,19,15,.6);
+    font-style:normal;
+  }
+  .stat-row{
+    display:grid;grid-template-columns:repeat(3,1fr);
+    border-top:1px solid rgba(21,19,15,.18);
+    border-bottom:1px solid rgba(21,19,15,.18);
+  }
+  .stat{
+    padding:1.1rem .3rem;text-align:center;
+    border-right:1px solid rgba(21,19,15,.18);
+  }
+  .stat:last-child{border-right:none;}
+  .stat .num{
+    font-family:'Oswald',sans-serif;font-weight:700;
+    font-size:1.4rem;color:var(--corner-red-deep);display:block;
+  }
+  .stat .lbl{
+    font-size:.68rem;letter-spacing:.05em;
+    color:rgba(21,19,15,.65);margin-top:.2rem;display:block;
+  }
+
+  /* ============ PHOTO STRIP ============ */
+  .photo-strip{background:var(--canvas-dark);}
+  .strip-grid{
+    display:grid;grid-template-columns:1.2fr .8fr;
+    grid-template-rows:auto auto;
+    gap:.7rem;
+  }
+  .ph{
+    border-radius:8px;
+    min-height:150px;
+    overflow:hidden;
+    background:var(--canvas-dark-2);
+  }
+  .ph img{width:100%;height:100%;object-fit:cover;display:block;}
+  .ph.tall{grid-row:span 2;min-height:316px;}
+
+  /* ============ ROUNDS / WHY JOIN ============ */
+  .rounds{display:flex;flex-direction:column;gap:1.1rem;margin-top:2rem;}
+  .round{
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:1.3rem 1.4rem;
+    background:rgba(245,241,230,.03);
+    position:relative;
+  }
+  .round .rnum{
+    font-family:'Oswald',sans-serif;font-weight:700;
+    font-size:.7rem;letter-spacing:.16em;color:var(--belt-gold);
+    display:block;margin-bottom:.5rem;
+  }
+  .round h3{font-size:1.12rem;font-weight:700;margin:0 0 .4rem;}
+  .round p{font-size:.88rem;line-height:1.6;color:rgba(245,241,230,.8);margin:0;}
+
+  /* ============ SCHEDULE ============ */
+  .schedule{background:var(--canvas-light);color:var(--ink);}
+  .sched-table{
+    width:100%;border-collapse:collapse;margin-top:1.6rem;
+    font-size:.88rem;
+  }
+  .sched-table th{
+    font-family:'Oswald',sans-serif;font-size:.68rem;
+    letter-spacing:.1em;text-transform:uppercase;
+    text-align:left;color:rgba(21,19,15,.55);
+    padding:.5rem .3rem;border-bottom:2px solid var(--ink);
+  }
+  .sched-table td{
+    padding:.7rem .3rem;border-bottom:1px solid rgba(21,19,15,.15);
+  }
+  .sched-table td.edit{color:var(--corner-red-deep);font-style:italic;}
+  .addr{margin-top:1rem;font-size:.9rem;line-height:1.7;color:rgba(21,19,15,.8);}
+  .loc-grid{
+    display:grid;grid-template-columns:repeat(3,1fr);
+    gap:.6rem;margin-top:1.4rem;
+  }
+  .ph.loc{
+    min-height:110px;
+    border:1px dashed rgba(21,19,15,.35);
+    display:flex;align-items:center;justify-content:center;
+    background:repeating-linear-gradient(135deg, rgba(21,19,15,.04) 0 10px, transparent 10px 20px);
+    text-align:center;padding:.6rem;
+  }
+  .ph.loc span{
+    font-family:'Oswald',sans-serif;font-size:.68rem;
+    letter-spacing:.06em;color:rgba(21,19,15,.55);
+  }
+
+  /* ============ CLIPS (TikTok) ============ */
+  .clips{background:var(--canvas-dark-2);}
+  .clips-scroll{
+    display:flex;gap:.9rem;
+    overflow-x:auto;
+    margin:1.8rem -6vw 0;
+    padding:0 6vw .5rem;
+    scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;
+  }
+  .clips-scroll::-webkit-scrollbar{height:5px;}
+  .clips-scroll::-webkit-scrollbar-thumb{background:var(--line);border-radius:10px;}
+  .clip-card{
+    flex:0 0 78%;
+    max-width:300px;
+    scroll-snap-align:start;
+    border-radius:12px;
+    overflow:hidden;
+    background:var(--chalk);
+  }
+  .clip-card blockquote.tiktok-embed{margin:0 !important;}
+
+  /* ============ FOOTER ============ */
+  footer{
+    background:var(--canvas-dark);
+    padding:3.6rem 6vw 3rem;
+    text-align:center;
+    border-top:1px solid var(--line);
+  }
+  footer .fname{
+    font-weight:800;font-size:1.3rem;margin-bottom:.3rem;
+  }
+  footer .ftag{
+    color:var(--belt-gold);font-family:'Oswald',sans-serif;
+    font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;margin-bottom:1.6rem;display:block;
+  }
+  .social-row{
+    display:flex;justify-content:center;gap:.8rem;margin-bottom:1.8rem;flex-wrap:wrap;
+  }
+  .social-row a{
+    font-family:'Oswald',sans-serif;font-size:.74rem;
+    letter-spacing:.05em;
+    color:var(--chalk);
+    border:1px solid var(--line);
+    padding:.55rem 1rem;border-radius:30px;
+    text-decoration:none;
+  }
+  footer .copy{font-size:.72rem;color:rgba(245,241,230,.45);}
+
+  @media (min-width:700px){
+    .corners{flex-direction:row;}
+    .corner-card{flex:1;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ===================== HERO ===================== -->
+  <section class="hero">
+    <div class="hero-photo">
+      <!-- ใส่ไฟล์ image3.jpg ไว้โฟลเดอร์เดียวกับ index.html -->
+      <img src="image3.jpg" alt="KMITL Boxing Club">
+    </div>
+    <div class="hero-frame"></div>
+    <div class="hero-content reveal in">
+      <span class="eyebrow">MUAY THAI · BOXING · KMITL</span>
+      <h1>ขึ้นริงกับ<br><span class="accent">KMITL</span> BOXING CLUB</h1>
+      <a class="btn-download" id="downloadHeroBtn" href="image3.jpg" download="kmitl-boxing-club.jpg">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 11l5 5 5-5"/><path d="M5 21h14"/></svg>
+        บันทึกใบปลิวเก็บไว้
+      </a>
+      <p class="lead">ชมรมมวยของคนสจล. เปิดสอนมวยฟรีเด็กปี 1 ตั้งแต่พื้นฐาน มีคนพาออกกำลังกาย หาเพื่อนใหม่ ลดน้ำหนักได้จริง ไม่จำเป็นต้องต่อยกันเสมอไป</p>
+      <div class="scroll-cue"><div class="bar"></div>เลื่อนลง เลือกมุมของคุณ</div>
+    </div>
+  </section>
+
+  <!-- ===================== FACE-OFF / QR ===================== -->
+  <section class="faceoff">
+    <div class="faceoff-head reveal">
+      <span class="tag">เลือกมุมของคุณ</span>
+      <h2>มุมแดง หรือ มุมน้ำเงิน?</h2>
+      <p>สแกน QR แล้วเลือกทางที่ใช่สำหรับน้อง ไม่มีพื้นฐานก็ไม่ต้องกังวล</p>
+    </div>
+
+    <div class="vs-row reveal">
+      <div class="line"></div><div class="vs-word">VS</div><div class="line"></div>
+    </div>
+
+    <div class="corners">
+      <div class="corner-card red reveal">
+        <span class="corner-label">มุมแดง</span>
+        <h3>สมัครเข้าชมรม</h3>
+        <p>อยู่กับทีมตลอดปี ออกกำลังกายสม่ำเสมอ มีเพื่อนซ้อมทุกสัปดาห์ ใครอยากลงแข่งก็มีโอกาส ใครแค่อยากฟิตก็เต็มที่ได้</p>
+        <div class="qr-block">
+          <!-- TODO: เปลี่ยน data= เป็นลิงก์ฟอร์มสมัครเข้าชมรมจริง -->
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=8&color=15-13-15&bgcolor=245-241-230&data=https%3A%2F%2Fexample.com%2Fkmitl-boxing-join" alt="QR สมัครเข้าชมรม">
+          <div class="qr-text"><b>สแกนเพื่อสมัคร</b>กรอกข้อมูลใช้เวลาไม่ถึง 1 นาที</div>
+        </div>
+      </div>
+
+      <div class="corner-card blue reveal">
+        <span class="corner-label">มุมน้ำเงิน</span>
+        <h3>เรียนมวยฟรี</h3>
+        <p>ไม่มีพื้นฐานก็มาได้ มีคนพาสอนตั้งแต่เริ่มต้น เหมาะกับทุกคนที่อยากออกกำลังกาย ผู้หญิงก็มาได้ ลงทะเบียนจองวันเลย ไม่มีค่าใช้จ่าย</p>
+        <div class="qr-block">
+          <!-- TODO: เปลี่ยน data= เป็นลิงก์ลงทะเบียนทดลองเรียนจริง -->
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=8&color=15-13-15&bgcolor=245-241-230&data=https%3A%2F%2Fexample.com%2Fkmitl-boxing-trial" alt="QR เรียนมวยฟรี">
+          <div class="qr-text"><b>สแกนเพื่อลงทะเบียน</b>เลือกวันที่สะดวก เรียนฟรีไม่มีค่าใช้จ่าย</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== MISSION / STATS ===================== -->
+  <section class="section-light mission">
+    <div class="mission-photo reveal">
+      <!-- ใส่ไฟล์ IMG_9282.jpg ไว้โฟลเดอร์เดียวกับ index.html -->
+      <img src="IMG_9282.jpg" alt="ประธานชมรมมวย สจล." width="100px">
+    </div>
+    <span class="tag reveal">ภารกิจของเรา</span>
+    <h2 class="reveal">มวยที่เข้าถึงได้สำหรับทุกคน</h2>
+    <p class="reveal">เราเปิดสอนมวยฟรี มีคนพาตั้งแต่พื้นฐาน ไม่ต้องมีประสบการณ์มาก่อน มวยเป็นการออกกำลังกายที่ดี ช่วยลดน้ำหนักได้จริง แถมได้เพื่อนใหม่ทุกคณะ ผู้หญิงหรือใครก็มาได้เหมือนกัน ใครอยากแค่ออกกำลังกายก็ทำได้เต็มที่ ส่วนใครอยากลงต่อยจริงก็มีทีมรองรับ ไม่บังคับว่าทุกคนต้องขึ้นชกเสมอไป</p>
+    <blockquote class="pull-quote reveal">
+      <p>เราอยากให้ทุกคนเข้าใจว่ามวยเป็นกีฬาทางเลือกที่ทุกคนควรลองสักครั้ง และไม่ได้น่ากลัวอย่างที่คิด</p>
+      <cite>— พี่ธัน ประธานชมรมมวย สจล.</cite>
+    </blockquote>
+    <div class="stat-row reveal">
+      <div class="stat"><span class="num">2024</span><span class="lbl">ก่อตั้ง</span></div>
+      <div class="stat"><span class="num">300+</span><span class="lbl">สมาชิกปัจจุบัน</span></div>
+      <div class="stat"><span class="num">ไม่บังคับ</span><span class="lbl">ความถี่ในการฝึก</span></div>
+    </div>
+  </section>
+
+  <!-- ===================== PHOTO STRIP ===================== -->
+  <section class="photo-strip">
+    <span class="tag reveal">บรรยากาศจริง</span>
+    <h2 class="reveal">หนึ่งวันในยิมของเรา</h2>
+    <div class="strip-grid reveal">
+      <!-- ใส่ไฟล์ IMG_4.jpg, IMG_5.jpg, img6.JPEG ไว้โฟลเดอร์เดียวกับ index.html -->
+      <div class="ph tall"><img src="IMG_4.jpg" alt="บรรยากาศการฝึกซ้อม"></div>
+      <div class="ph"><img src="IMG_5.jpg" alt="สมาชิกชมรม"></div>
+      <div class="ph"><img src="img6.JPEG" alt="กิจกรรมชมรม"></div>
+    </div>
+  </section>
+
+  <!-- ===================== WHY JOIN / ROUNDS ===================== -->
+  <section>
+    <span class="tag reveal">ทำไมต้องลองมวยที่นี่</span>
+    <h2 class="reveal">3 เหตุผลที่น่าลองสักครั้ง</h2>
+    <div class="rounds">
+      <div class="round reveal">
+        <span class="rnum">ROUND 1</span>
+        <h3>ออกกำลังกายที่ได้ผลจริง</h3>
+        <p>มวยเผาแคลอรี่สูง ลดน้ำหนักได้จริง เสริมกล้ามเนื้อ และฝึกสมาธิไปพร้อมกัน เหมาะกับทุกเพศทุกระดับ ไม่ต้องมีพื้นฐานมาก่อน</p>
+      </div>
+      <div class="round reveal">
+        <span class="rnum">ROUND 2</span>
+        <h3>เพื่อนใหม่ทุกคณะ</h3>
+        <p>ชมรมรวมคนจากทุกคณะของ สจล. มาออกกำลังกายด้วยกัน ได้เพื่อนใหม่ที่หาที่อื่นไม่ได้</p>
+      </div>
+      <div class="round reveal">
+        <span class="rnum">ROUND 3</span>
+        <h3>ต่อยหรือไม่ต่อยก็ได้ ไม่บังคับ</h3>
+        <p>ใครแค่อยากออกกำลังกายก็ทำได้เต็มที่ ส่วนใครอยากลงแข่งจริงก็มีทีมและโอกาสรองรับ เลือกได้ตามที่ตัวเองสบายใจ</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SCHEDULE / LOCATION ===================== -->
+  <section class="schedule">
+    <span class="tag reveal">ตารางฝึกและสถานที่</span>
+    <h2 class="reveal">ฝึกที่ไหน เมื่อไหร่</h2>
+    <table class="sched-table reveal">
+      <tr><th>วัน</th><th>เวลา</th><th>สถานที่</th></tr>
+      <tr><td class="edit">[ระบุวัน]</td><td class="edit">[ระบุเวลา]</td><td class="edit">[ระบุสถานที่]</td></tr>
+      <tr><td class="edit">[ระบุวัน]</td><td class="edit">[ระบุเวลา]</td><td class="edit">[ระบุสถานที่]</td></tr>
+      <tr><td class="edit">[ระบุวัน]</td><td class="edit">[ระบุเวลา]</td><td class="edit">[ระบุสถานที่]</td></tr>
+    </table>
+    <p class="addr reveal">ที่ตั้งชมรม: อยู่ใต้ตึกกิจกรรม คณะวิทยาศาสตร์ สังเกตร้าน Lawson ฝั่งคณะวิทย์ แล้วเดินเข้ามาอีกนิดเดียวก็ถึงแล้ว</p>
+    <div class="loc-grid reveal">
+      <!-- TODO: แทนที่ทั้ง 3 กล่องด้วยรูปจริงที่ช่วยบอกทาง -->
+      <div class="ph loc"><span>มุมร้าน Lawson<br>(จุดสังเกตเริ่มต้น)</span></div>
+      <div class="ph loc"><span>ใต้ตึกกิจกรรม<br>คณะวิทยาศาสตร์</span></div>
+      <div class="ph loc"><span>ทางเดินเข้าชมรม</span></div>
+    </div>
+  </section>
+
+  <!-- ===================== CLIPS (TikTok) ===================== -->
+  <section class="clips">
+    <span class="tag reveal">ดูตัวจริงก่อนมา</span>
+    <h2 class="reveal">คลิปบรรยากาศจากชมรม</h2>
+    <div class="clips-scroll reveal">
+      <div class="clip-card">
+        <blockquote class="tiktok-embed" cite="https://www.tiktok.com/@maosprnhoon/video/7531734406856199431" data-video-id="7531734406856199431" style="max-width:100%;min-width:300px;">
+          <section><a target="_blank" title="@maosprnhoon" href="https://www.tiktok.com/@maosprnhoon?refer=embed">@maosprnhoon</a></section>
+        </blockquote>
+      </div>
+      <div class="clip-card">
+        <blockquote class="tiktok-embed" cite="https://www.tiktok.com/@maosprnhoon/video/7551367186858724616" data-video-id="7551367186858724616" style="max-width:100%;min-width:300px;">
+          <section><a target="_blank" title="@maosprnhoon" href="https://www.tiktok.com/@maosprnhoon?refer=embed">@maosprnhoon</a></section>
+        </blockquote>
+      </div>
+      <div class="clip-card">
+        <blockquote class="tiktok-embed" cite="https://www.tiktok.com/@maosprnhoon/video/7540076411638336775" data-video-id="7540076411638336775" style="max-width:100%;min-width:300px;">
+          <section><a target="_blank" title="@maosprnhoon" href="https://www.tiktok.com/@maosprnhoon?refer=embed">@maosprnhoon</a></section>
+        </blockquote>
+      </div>
+      <div class="clip-card">
+        <blockquote class="tiktok-embed" cite="https://www.tiktok.com/@maosprnhoon/video/7601104031255104775" data-video-id="7601104031255104775" style="max-width:100%;min-width:300px;">
+          <section><a target="_blank" title="@maosprnhoon" href="https://www.tiktok.com/@maosprnhoon?refer=embed">@maosprnhoon</a></section>
+        </blockquote>
+      </div>
+    </div>
+  </section>
+  <script async src="https://www.tiktok.com/embed.js"></script>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer>
+    <div class="fname">KMITL BOXING CLUB</div>
+    <span class="ftag">ขึ้นริงไปด้วยกัน</span>
+    <div class="social-row">
+      <a href="https://www.instagram.com/kmitl_boxing_club/" target="_blank">Instagram</a>
+      <a href="#">[Facebook]</a>
+      <a href="#">[Line OA]</a>
+    </div>
+    <div class="copy">© 2026 KMITL Boxing Club · made for freshmen, ready for everyone</div>
+  </footer>
+
+</div>
+
+<script>
+  const els = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); } });
+  }, {threshold:0.15});
+  els.forEach(el=>io.observe(el));
+
+  // ทำให้ปุ่ม "บันทึกรูปนี้" ดาวน์โหลดแน่นอนขึ้น (เผื่อรูปถูกย้ายไปอยู่คนละโดเมนในอนาคต)
+  const dlBtn = document.getElementById('downloadHeroBtn');
+  if(dlBtn){
+    dlBtn.addEventListener('click', async (e)=>{
+      const url = dlBtn.getAttribute('href');
+      const filename = dlBtn.getAttribute('download') || 'kmitl-boxing-club.jpg';
+      try{
+        const res = await fetch(url);
+        const blob = await res.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(blobUrl);
+        e.preventDefault();
+      }catch(err){
+        // ดึงรูปไม่ได้ (เช่น ยังไม่มีไฟล์รูปจริง) ปล่อยให้เบราว์เซอร์จัดการแบบปกติผ่าน href/download
+      }
+    });
+  }
+</script>
+</body>
+</html>
