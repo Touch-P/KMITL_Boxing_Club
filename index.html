@@ -322,17 +322,107 @@
     display:grid;grid-template-columns:repeat(3,1fr);
     gap:.6rem;margin-top:1.4rem;
   }
-  .ph.loc{
-    min-height:110px;
-    border:1px dashed rgba(21,19,15,.35);
-    display:flex;align-items:center;justify-content:center;
-    background:repeating-linear-gradient(135deg, rgba(21,19,15,.04) 0 10px, transparent 10px 20px);
-    text-align:center;padding:.6rem;
-  }
-  .ph.loc span{
-    font-family:'Oswald',sans-serif;font-size:.68rem;
-    letter-spacing:.06em;color:rgba(21,19,15,.55);
-  }
+/* ============ LOCATION PHOTOS ============ */
+.ph.loc {
+  min-height: 110px;
+  position: relative;          /* ← เพิ่ม */
+  overflow: hidden;
+  border: 1px solid rgba(21,19,15,.25);
+  background: var(--canvas-dark-2);  /* fallback ถ้ารูปโหลดช้า */
+  /* ลบ display:flex / padding / background-gradient ออก */
+}
+
+.ph.loc img {
+  position: absolute;          /* ← เพิ่ม */
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+/* ============ LIGHTBOX ============ */
+.lightbox-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: rgba(15,13,10,.82);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  align-items: center;
+  justify-content: center;
+  padding: 1.2rem;
+}
+.lightbox-overlay.open {
+  display: flex;
+}
+.lightbox-box {
+  position: relative;
+  max-width: min(520px, 92vw);
+  width: 100%;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 24px 80px rgba(0,0,0,.65);
+  animation: lbIn .22s ease;
+}
+@keyframes lbIn {
+  from { opacity: 0; transform: scale(.9); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.lightbox-box img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 72vh;
+  object-fit: contain;
+  background: #1d1a14;
+}
+.lightbox-caption {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: rgba(15,13,10,.72);
+  backdrop-filter: blur(4px);
+  font-family: 'Oswald', sans-serif;
+  font-size: .72rem;
+  letter-spacing: .08em;
+  color: rgba(245,241,230,.9);
+  text-align: center;
+  padding: .55rem 1rem;
+}
+.lightbox-close {
+  position: absolute;
+  top: .6rem; right: .6rem;
+  width: 32px; height: 32px;
+  background: rgba(15,13,10,.7);
+  border: 1px solid rgba(245,241,230,.2);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: #f5f1e6;
+  font-size: 1rem;
+  line-height: 1;
+  z-index: 2;
+  transition: background .15s;
+}
+.lightbox-close:hover { background: rgba(200,30,58,.75); }
+
+
+/* label เป็น overlay ด้านล่าง */
+.ph.loc span {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  z-index: 1;
+  background: rgba(21,19,15,.62);
+  backdrop-filter: blur(2px);
+  font-family: 'Oswald', sans-serif;
+  font-size: .62rem;
+  letter-spacing: .06em;
+  color: rgba(245,241,230,.92);
+  text-align: center;
+  padding: .35rem .4rem;
+  line-height: 1.4;
+}
+
 
   /* ============ CLIPS (TikTok) ============ */
   .clips{background:var(--canvas-dark-2);}
@@ -430,7 +520,9 @@
         <p>อยู่กับทีมตลอดปี ออกกำลังกายสม่ำเสมอ มีเพื่อนซ้อมทุกสัปดาห์ ใครอยากลงแข่งก็มีโอกาส ใครแค่อยากฟิตก็เต็มที่ได้</p>
         <div class="qr-block">
           <!-- TODO: เปลี่ยน data= เป็นลิงก์ฟอร์มสมัครเข้าชมรมจริง -->
-          <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=8&color=15-13-15&bgcolor=245-241-230&data=https%3A%2F%2Fexample.com%2Fkmitl-boxing-join" alt="QR สมัครเข้าชมรม">
+          <a href="https://forms.gle/1qxhroJ4jGJNjz5U7" target="_blank">
+          <img src="qrสมัครเข้าชมรม.png" alt="QR สมัครเข้าชมรม">
+          </a>
           <div class="qr-text"><b>สแกนเพื่อสมัคร</b>กรอกข้อมูลใช้เวลาไม่ถึง 1 นาที</div>
         </div>
       </div>
@@ -441,7 +533,9 @@
         <p>ไม่มีพื้นฐานก็มาได้ มีคนพาสอนตั้งแต่เริ่มต้น เหมาะกับทุกคนที่อยากออกกำลังกาย ผู้หญิงก็มาได้ ลงทะเบียนจองวันเลย ไม่มีค่าใช้จ่าย</p>
         <div class="qr-block">
           <!-- TODO: เปลี่ยน data= เป็นลิงก์ลงทะเบียนทดลองเรียนจริง -->
-          <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=8&color=15-13-15&bgcolor=245-241-230&data=https%3A%2F%2Fexample.com%2Fkmitl-boxing-trial" alt="QR เรียนมวยฟรี">
+           <a href="https://forms.gle/oFwYMYUtUfDLHfqB7" target="_blank">
+          <img src="qrเรียนมวยฟรี.png" alt="QR เรียนมวยฟรี">
+          </a>
           <div class="qr-text"><b>สแกนเพื่อลงทะเบียน</b>เลือกวันที่สะดวก เรียนฟรีไม่มีค่าใช้จ่าย</div>
         </div>
       </div>
@@ -507,18 +601,13 @@
   <section class="schedule">
     <span class="tag reveal">ตารางฝึกและสถานที่</span>
     <h2 class="reveal">ฝึกที่ไหน เมื่อไหร่</h2>
-    <table class="sched-table reveal">
-      <tr><th>วัน</th><th>เวลา</th><th>สถานที่</th></tr>
-      <tr><td class="edit">[ระบุวัน]</td><td class="edit">[ระบุเวลา]</td><td class="edit">[ระบุสถานที่]</td></tr>
-      <tr><td class="edit">[ระบุวัน]</td><td class="edit">[ระบุเวลา]</td><td class="edit">[ระบุสถานที่]</td></tr>
-      <tr><td class="edit">[ระบุวัน]</td><td class="edit">[ระบุเวลา]</td><td class="edit">[ระบุสถานที่]</td></tr>
-    </table>
+    <p class="reveal">น้องๆทุกคนสามารถเข้าร่วมกิจกรรมสอนมวยฟรี ได้ทุกวันพุธและพฤหัสบดี ระหว่างเวลา 17:00-20:00 น. เริ่มตั้งแต่วันที่ 15/07/2569 เป็นต้นไป</p>
     <p class="addr reveal">ที่ตั้งชมรม: อยู่ใต้ตึกกิจกรรม คณะวิทยาศาสตร์ สังเกตร้าน Lawson ฝั่งคณะวิทย์ แล้วเดินเข้ามาอีกนิดเดียวก็ถึงแล้ว</p>
     <div class="loc-grid reveal">
       <!-- TODO: แทนที่ทั้ง 3 กล่องด้วยรูปจริงที่ช่วยบอกทาง -->
-      <div class="ph loc"><span>มุมร้าน Lawson<br>(จุดสังเกตเริ่มต้น)</span></div>
-      <div class="ph loc"><span>ใต้ตึกกิจกรรม<br>คณะวิทยาศาสตร์</span></div>
-      <div class="ph loc"><span>ทางเดินเข้าชมรม</span></div>
+      <div class="ph loc"><span>มุมร้าน Lawson<br>(จุดสังเกตเริ่มต้น)</span><img src="lawson.png" alt="Lawson"></div>
+      <div class="ph loc"><span>ใต้ตึกกิจกรรม<br>คณะวิทยาศาสตร์</span><img src="ใต้เวที.jpg" alt="ใต้ตึกกิจกรรม"></div>
+      <div class="ph loc"><span>ทางเดินเข้าชมรม</span><img src="ทางเดิน.png" alt="ทางเดินเข้าชมรม"></div>
     </div>
   </section>
 
@@ -566,6 +655,48 @@
 </div>
 
 <script>
+  /* ─── Lightbox for .ph.loc ─── */
+(() => {
+  // สร้าง overlay ครั้งเดียว
+  const overlay = document.createElement('div');
+  overlay.className = 'lightbox-overlay';
+  overlay.innerHTML = `
+    <div class="lightbox-box">
+      <button class="lightbox-close" aria-label="ปิด">✕</button>
+      <img src="" alt="">
+      <div class="lightbox-caption"></div>
+    </div>`;
+  document.body.appendChild(overlay);
+
+  const lbImg     = overlay.querySelector('img');
+  const lbCaption = overlay.querySelector('.lightbox-caption');
+  const lbClose   = overlay.querySelector('.lightbox-close');
+
+  const open  = (src, alt) => {
+    lbImg.src        = src;
+    lbImg.alt        = alt;
+    lbCaption.textContent = alt;
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  };
+  const close = () => {
+    overlay.classList.remove('open');
+    document.body.style.overflow = '';
+  };
+
+  // คลิกรูปใน loc-grid
+  document.querySelectorAll('.ph.loc img').forEach(img => {
+    img.style.cursor = 'zoom-in';
+    img.addEventListener('click', () => open(img.src, img.alt));
+  });
+
+  // ปิด: กดปุ่ม ✕ หรือคลิก overlay นอกกรอบ
+  lbClose.addEventListener('click', close);
+  overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
+
+  // ปิด: กด Escape
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+})();
   /* ─── Scroll reveal ─── */
   document.querySelectorAll('.reveal').forEach(el =>
     new IntersectionObserver(
